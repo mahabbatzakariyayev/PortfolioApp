@@ -1,12 +1,14 @@
 package com.example.portfolio.Repository;
 
+import com.example.portfolio.entity.ProjectEntity;
 import com.example.portfolio.entity.PortfolioEntity;
-import com.example.portfolio.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface PortfolioRepository extends JpaRepository<PortfolioEntity, Long> {
+import java.util.List;
 
-    PortfolioEntity findByUser(UserEntity user); // ✅ Find portfolio by user
+@Repository
+public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
+
+    List<ProjectEntity> findByPortfolio(PortfolioEntity portfolio); // ✅ Get all projects from a portfolio
 }
