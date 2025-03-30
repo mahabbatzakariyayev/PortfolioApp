@@ -42,4 +42,12 @@ public class ProjectEntity {
     @CollectionTable(name = "project_comments", joinColumns = @JoinColumn(name = "project_id"))
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ProjectComment> comments = new ArrayList<>();
+
+    @JsonProperty("createdBy")
+    public String getCreatedByUsername() {
+        if (portfolio != null && portfolio.getUser() != null) {
+            return portfolio.getUser().getUsername();
+        }
+        return null;
+    }
 }
