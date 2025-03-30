@@ -15,7 +15,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // Simulated logged-in user (bob = ID 2)
     public UserEntity getCurrentUser() {
         return userRepository.findById(2L).orElseThrow();
     }

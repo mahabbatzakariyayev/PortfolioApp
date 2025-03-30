@@ -1,7 +1,6 @@
 package com.example.portfolio.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,32 +18,24 @@ public class UserEntity {
 
     private String username;
 
-    // ✅ Bu user kimləri izləyir
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore // Prevents user from exposing portfolio in response unless needed
+    private PortfolioEntity portfolio;
+
     @ManyToMany
-    @JoinTable(
-            name = "user_following",
-            joinColumns = @JoinColumn(name = "follower_id"),
-            inverseJoinColumns = @JoinColumn(name = "followed_id")
-    )
+    @JoinTable(name = "user_following", joinColumns = @JoinColumn(name = "follower_id"), inverseJoinColumns = @JoinColumn(name = "followed_id"))
     @JsonIgnore
     private List<UserEntity> following = new ArrayList<>();
 
-    // ✅ Bu useri kimlər izləyir
     @ManyToMany(mappedBy = "following")
     @JsonIgnore
     private List<UserEntity> followers = new ArrayList<>();
 
-    // ✅ Bu userin like etdiyi portfolio-lar
     @ManyToMany
-    @JoinTable(
-            name = "users_liked_project",
-            joinColumns = @JoinColumn(name = "user_entity_id"),
-            inverseJoinColumns = @JoinColumn(name = "liked_project_id")
-    )
+    @JoinTable(name = "users_liked_projects", joinColumns = @JoinColumn(name = "user_entity_id"), inverseJoinColumns = @JoinColumn(name = "liked_projects_id"))
     private List<ProjectEntity> likedProjects = new ArrayList<>();
 
-    // ✅ Bu userin commentləri
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "user-comments")
-    private List<CommentEntity> comments = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "users_saved_projects", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "project_id"))
+    private List<ProjectEntity> savedProjects = new ArrayList<>();
 }

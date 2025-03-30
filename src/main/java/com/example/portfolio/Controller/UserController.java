@@ -17,31 +17,26 @@ public class UserController {
         this.userService = userService;
     }
 
-    // ✅ Follow another user
     @PostMapping("/{id}/follow")
     public ResponseEntity<String> follow(@PathVariable Long id) {
         return ResponseEntity.ok(userService.followUser(id));
     }
 
-    // ✅ Unfollow a user
     @PostMapping("/{id}/unfollow")
     public ResponseEntity<String> unfollow(@PathVariable Long id) {
         return ResponseEntity.ok(userService.unfollowUser(id));
     }
 
-    // ✅ Get users the current user is following
     @GetMapping("/following")
     public ResponseEntity<List<UserEntity>> getFollowing() {
         return ResponseEntity.ok(userService.getFollowing());
     }
 
-    // ✅ Get users who follow the current user
     @GetMapping("/followers")
     public ResponseEntity<List<UserEntity>> getFollowers() {
         return ResponseEntity.ok(userService.getFollowers());
     }
 
-    // ✅ Check if you're following a specific user
     @GetMapping("/check-following/{id}")
     public ResponseEntity<Boolean> isFollowing(@PathVariable Long id) {
         return ResponseEntity.ok(userService.isFollowing(id));

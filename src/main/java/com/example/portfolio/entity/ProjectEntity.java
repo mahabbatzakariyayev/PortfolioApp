@@ -1,6 +1,6 @@
 package com.example.portfolio.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -13,12 +13,17 @@ import java.util.List;
 public class ProjectEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     private String title;
     private String description;
     private String githubLink;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String imageUrl;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String videoUrl;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -28,9 +33,13 @@ public class ProjectEntity {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer version;
 
-    // ✅ Bu portfolio-ya gələn commentlər
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "project-comments")
+    @ManyToOne
+    @JoinColumn(name = "portfolio_id")
+    @JsonIgnore
+    private PortfolioEntity portfolio;
+
+    @ElementCollection
+    @CollectionTable(name = "project_comments", joinColumns = @JoinColumn(name = "project_id"))
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<CommentEntity> comments = new ArrayList<>();
+    private List<ProjectComment> comments = new ArrayList<>();
 }
