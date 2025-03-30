@@ -20,31 +20,31 @@ public class UserService {
         return userRepository.findById(2L).orElseThrow();
     }
 
-        public String followUser(Long targetId) {
-            UserEntity me = getCurrentUser();
-            UserEntity target = userRepository.findById(targetId).orElseThrow();
+    public String followUser(Long targetId) {
+        UserEntity me = getCurrentUser();
+        UserEntity target = userRepository.findById(targetId).orElseThrow();
 
-            if (me.getId().equals(targetId)) return "❌ You can't follow yourself.";
+        if (me.getId().equals(targetId)) return "❌ You can't follow yourself.";
 
-            if (!userRepository.isFollowing(me.getId(), targetId)) {
-                me.getFollowing().add(target);
-                userRepository.save(me);
-                return "✅ Followed " + target.getUsername();
-            }
-            return "⚠️ Already following " + target.getUsername();
+        if (!userRepository.isFollowing(me.getId(), targetId)) {
+            me.getFollowing().add(target);
+            userRepository.save(me);
+            return "✅ Followed " + target.getUsername();
         }
+        return "⚠️ Already following " + target.getUsername();
+    }
 
-        public String unfollowUser(Long targetId) {
-            UserEntity me = getCurrentUser();
-            UserEntity target = userRepository.findById(targetId).orElseThrow();
+    public String unfollowUser(Long targetId) {
+        UserEntity me = getCurrentUser();
+        UserEntity target = userRepository.findById(targetId).orElseThrow();
 
-            if (userRepository.isFollowing(me.getId(), targetId)) {
-                me.getFollowing().remove(target);
-                userRepository.save(me);
-                return "✅ Unfollowed " + target.getUsername();
-            }
-            return "⚠️ You're not following " + target.getUsername();
+        if (userRepository.isFollowing(me.getId(), targetId)) {
+            me.getFollowing().remove(target);
+            userRepository.save(me);
+            return "✅ Unfollowed " + target.getUsername();
         }
+        return "⚠️ You're not following " + target.getUsername();
+    }
 
     public List<UserEntity> getFollowing() {
         return userRepository.findFollowingOfUser(getCurrentUser().getId());

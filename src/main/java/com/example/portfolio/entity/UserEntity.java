@@ -37,11 +37,11 @@ public class UserEntity {
     // ✅ Bu userin like etdiyi portfolio-lar
     @ManyToMany
     @JoinTable(
-            name = "users_liked_portfolio",
+            name = "users_liked_project",
             joinColumns = @JoinColumn(name = "user_entity_id"),
-            inverseJoinColumns = @JoinColumn(name = "liked_portfolio_id")
+            inverseJoinColumns = @JoinColumn(name = "liked_project_id")
     )
-    private List<PortfolioEntity> likedPortfolios = new ArrayList<>();
+    private List<ProjectEntity> likedProjects = new ArrayList<>();
 
     // ✅ Bu userin commentləri
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

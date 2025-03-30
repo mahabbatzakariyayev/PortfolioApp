@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @Entity
-public class PortfolioEntity {
+public class ProjectEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,8 +29,8 @@ public class PortfolioEntity {
     private Integer version;
 
     // ✅ Bu portfolio-ya gələn commentlər
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "portfolio-comments")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "project-comments")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<CommentEntity> comments = new ArrayList<>();
 }

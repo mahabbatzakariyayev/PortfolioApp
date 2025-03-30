@@ -25,8 +25,8 @@ public class CommentEntity {
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "portfolio_id")
-    @JsonBackReference(value = "portfolio-comments")
-    private PortfolioEntity portfolio;
+    @JoinColumn(name = "project_id")
+    @JsonBackReference(value = "project-comments")
+    private ProjectEntity project;
 
 }
