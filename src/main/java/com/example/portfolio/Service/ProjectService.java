@@ -4,19 +4,40 @@ import com.example.portfolio.Repository.ProjectRepository;
 import com.example.portfolio.Repository.UserRepository;
 import com.example.portfolio.entity.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final String uploadDir = "resources/media";
 
     public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        createUploadDirectory();
+    }
+
+    private void createUploadDirectory() {
+        try {
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create upload directory!", e);
+        }
     }
 
     public UserEntity getCurrentUser() {
@@ -116,5 +137,47 @@ public class ProjectService {
         projectRepository.save(project);
 
         return "✅ Comment added to project!";
+    }
+
+    public String uploadProjectImage(Long projectId, MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                throw new RuntimeException("Failed to upload empty file");
+            }
+
+            ProjectEntity project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+
+            // Validate file type
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new RuntimeException("Only image files are allowed");
+            }
+
+            // Get original filename and clean it
+            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+            String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+
+            // Validate extension
+            if (!extension.matches("\\.(jpg|jpeg|png|gif)$")) {
+                throw new RuntimeException("Only JPG, PNG and GIF files are allowed");
+            }
+
+            // Generate unique filename
+            String newFilename = UUID.randomUUID().toString() + extension;
+
+            // Save file
+            Path filePath = Paths.get(uploadDir, newFilename);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Update project with new image URL
+            String imageUrl = "/media/" + newFilename;
+            project.setImageUrl(imageUrl);
+            projectRepository.save(project);
+
+            return "✅ Image uploaded successfully!";
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload image: " + e.getMessage());
+        }
     }
 }
