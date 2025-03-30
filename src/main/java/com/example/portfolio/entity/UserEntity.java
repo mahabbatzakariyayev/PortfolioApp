@@ -1,10 +1,13 @@
 package com.example.portfolio.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Data
 @Entity
 @Table(name = "users")
@@ -16,36 +19,32 @@ public class UserEntity {
 
     private String username;
 
-    // FOLLOWING RELATIONSHIP
+    // ✅ Bu user kimləri izləyir
     @ManyToMany
     @JoinTable(
             name = "user_following",
             joinColumns = @JoinColumn(name = "follower_id"),
             inverseJoinColumns = @JoinColumn(name = "followed_id")
     )
+    @JsonIgnore
     private List<UserEntity> following = new ArrayList<>();
 
-    // 👇 Required Getters and Setters
-    public List<UserEntity> getFollowing() {
-        return following;
-    }
+    // ✅ Bu useri kimlər izləyir
+    @ManyToMany(mappedBy = "following")
+    @JsonIgnore
+    private List<UserEntity> followers = new ArrayList<>();
 
-    public void setFollowing(List<UserEntity> following) {
-        this.following = following;
-    }
-
-    // Other getters/setters...
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
+    // ✅ Bu userin like etdiyi portfolio-lar
     @ManyToMany
-    private List<ProjectEntity> likedProjects = new ArrayList<>();
+    @JoinTable(
+            name = "users_liked_portfolio",
+            joinColumns = @JoinColumn(name = "user_entity_id"),
+            inverseJoinColumns = @JoinColumn(name = "liked_portfolio_id")
+    )
+    private List<PortfolioEntity> likedPortfolios = new ArrayList<>();
 
-
-    // You can use Lombok to avoid writing boilerplate
+    // ✅ Bu userin commentləri
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "user-comments")
+    private List<CommentEntity> comments = new ArrayList<>();
 }
